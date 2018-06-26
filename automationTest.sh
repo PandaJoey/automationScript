@@ -1,4 +1,5 @@
 #!/bin/bash
+user=$USER
 
 sudo apt-get -y update
 sudo apt-get -y upgrade
@@ -10,9 +11,10 @@ sudo apt-get -y install npm
 sudo apt-get -y install virtualbox
 sudo apt-get -y install vagrant
 sudo vagrant box add ubuntu/bionic64 --force
-mkdir /home/joe/test/vagrantboxes
-sudo chown -R joe /home/joe/test/vagrantboxes
-cd /home/joe/test/vagrantboxes
+mkdir /home/$user/test/vagrantboxes
+sudo chown -R $user /home/$user/test/vagrantboxes
+sudo chmod -R /home/$user/test/vagrantboxes
+cd /home/$user/test/vagrantboxes
 sudo vagrant init ubuntu/bionic64
 sudo vagrant up
 #git clone https://github.com/PandaJoey/vagrantTestScript.git
@@ -44,10 +46,12 @@ server {
 sudo mv hello-app.txt /etc/nginx/sites-enabled/
 sudo nginx -s stop
 sudo service nginx start
-sudo mkdir /home/joe/nodeproject/
-sudo chown -R joe /home/joe/nodeprojects
-cd /home/joe/nodeprojects/
+sudo mkdir /home/$user/nodeproject/
+sudo chown -R $user /home/$user/nodeprojects
+sudo chmod -R /home/$user/nodeprojects
+cd /home/$user/nodeprojects/
 git init
 git clone https://github.com/PandaJoey/vagrantTestScript.git
+cd /home/$user/nodeprojects/vagrantTestScript/
 sudo npm install -y
 sudo node app.js &
