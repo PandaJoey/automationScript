@@ -1,8 +1,9 @@
 #!/bin/bash
-user=$USER
+user=$(whoami)
 
 sudo apt-get -y update
 sudo apt-get -y upgrade
+sudo apt-get -y install net-tools
 sudo apt-get -y install build-essential
 sudo apt-get -y install nginx
 sudo service nginx start
@@ -11,11 +12,12 @@ sudo apt-get -y install npm
 sudo apt-get -y install virtualbox
 sudo apt-get -y install vagrant
 sudo vagrant box add ubuntu/bionic64 --force
-mkdir /home/$user/test/vagrantboxes
-sudo chown -R $user /home/$user/test/vagrantboxes
-sudo chmod -R /home/$user/test/vagrantboxes
-cd /home/$user/test/vagrantboxes
+mkdir /home/scripttestmachine/test/vagrantboxes
+sudo chown -R scripttestmachine /home/scripttestmachine/test/vagrantboxes
+sudo chmod -R 777 /home/scripttestmachine/test/vagrantboxes
+cd /home/scripttestmachine/test/vagrantboxes
 sudo vagrant init ubuntu/bionic64
+sudo chmod -R 777 /home/scripttestmachine/test/vagrantboxes
 sudo vagrant up
 #git clone https://github.com/PandaJoey/vagrantTestScript.git
 #cd vagrantTestScript/
@@ -23,7 +25,7 @@ sudo vagrant up
 ip="$(ifconfig | grep wlp -A 2 | grep inet  | awk '{match($0,/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/); ip = substr($0,RSTART,RLENGTH); print ip}')"
 #ip="$(ifconfig | grep enp -A 2 | grep inet  | awk '{match($0,/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/); ip = substr($0,RSTART,RLENGTH); print ip}')"
 echo "upstream app_Hello {
-        server $ip:3014;
+        server $ip:3013;
 }
 
 server {
@@ -43,15 +45,15 @@ server {
                 proxy_buffering off;
         }
 }" > hello-app
-sudo mv hello-app.txt /etc/nginx/sites-enabled/
+sudo mv hello-app /etc/nginx/sites-enabled/
 sudo nginx -s stop
 sudo service nginx start
-sudo mkdir /home/$user/nodeproject/
-sudo chown -R $user /home/$user/nodeprojects
-sudo chmod -R /home/$user/nodeprojects
-cd /home/$user/nodeprojects/
+mkdir /home/scripttestmachine/nodeprojects/
+sudo chown -R scripttestmachine /home/scripttestmachine/nodeprojects
+sudo chmod -R 777 /home/scripttestmachine/nodeprojects/
+cd /home/scripttestmachine/nodeprojects/
 git init
 git clone https://github.com/PandaJoey/vagrantTestScript.git
-cd /home/$user/nodeprojects/vagrantTestScript/
+cd /home/scripttestmachine/nodeprojects/vagrantTestScript/
 sudo npm install -y
 sudo node app.js &
