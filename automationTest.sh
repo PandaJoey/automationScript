@@ -8,15 +8,15 @@ sudo service nginx start
 sudo apt-get -y install nodejs
 sudo apt-get -y install npm
 sudo apt-get -y install virtualbox
-sudo apt-get -y install vagrant 
-sudo vagrant box add ubuntu/bionic64
-mkdir vagrantboxes
-sudo chown -R ubuntu vagrantboxes/
-cd vagrantboxes
-vagrant init ubuntu/bionic64
+sudo apt-get -y install vagrant
+sudo vagrant box add ubuntu/bionic64 --force
+mkdir /home/joe/test/vagrantboxes
+sudo chown -R joe /home/joe/test/vagrantboxes
+cd /home/joe/test/vagrantboxes
+sudo vagrant init ubuntu/bionic64
+sudo vagrant up
 #git clone https://github.com/PandaJoey/vagrantTestScript.git
 #cd vagrantTestScript/
-vagrant up
 #need to change the file here some how
 ip="$(ifconfig | grep wlp -A 2 | grep inet  | awk '{match($0,/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/); ip = substr($0,RSTART,RLENGTH); print ip}')"
 #ip="$(ifconfig | grep enp -A 2 | grep inet  | awk '{match($0,/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/); ip = substr($0,RSTART,RLENGTH); print ip}')"
@@ -44,5 +44,10 @@ server {
 sudo mv hello-app.txt /etc/nginx/sites-enabled/
 sudo nginx -s stop
 sudo service nginx start
+sudo mkdir /home/joe/nodeproject/
+sudo chown -R joe /home/joe/nodeprojects
+cd /home/joe/nodeprojects/
+git init
+git clone https://github.com/PandaJoey/vagrantTestScript.git
 sudo npm install -y
 sudo node app.js &
