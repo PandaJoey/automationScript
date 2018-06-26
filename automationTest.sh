@@ -29,18 +29,18 @@ server {
         server_name l.hellovm.akerolabs.com;
         access_log /var/log/nginx/hello-admin.log;
         location / {
-                proxy_set_header X-Real-IP ;
-                proxy_set_header X-Forwarded-For ;
-                proxy_set_header Host ;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header Host $http_host;
                 proxy_set_header X-NginX-Proxy true;
-                proxy_set_header Upgrade ;
-                proxy_set_header Connection upgrade;
+                proxy_set_header Upgrade $https_upgrade;
+                proxy_set_header Connection "upgrade";
                 proxy_pass http://app_Hello/;
                 proxy_redirect off;
                 proxy_http_version 1.1;
                 proxy_buffering off;
         }
-}" > hello-app.txt
+}" > hello-app
 sudo mv hello-app.txt /etc/nginx/sites-enabled/
 sudo nginx -s stop
 sudo service nginx start
