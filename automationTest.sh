@@ -1,6 +1,9 @@
 #!/bin/bash
+#used to get the user name so can be used in file paths if used on other machines
 scriptUser=$(whoami)
-#sudo su 
+
+#should probably put these in some sort of function to check if they need to be installed rather than just trying to brute
+#force install them
 sudo apt-get -y update
 sudo apt-get -y upgrade
 sudo apt-get -y install net-tools
@@ -12,12 +15,15 @@ sudo apt-get -y install nodejs
 sudo apt-get -y install npm
 sudo apt-get -y install virtualbox
 sudo apt-get -y install vagrant
-#su - $scriptUser
+
+#creates a directory in the users workspace folder, might need to get some users input for this to ask for a file path
+#takes ownship and sets permisions for the file, not sure if nessasary need to test it.
+#clones the host files needed for install and takes ownership of the directory
+#then installs a box client in this game ubuntu and starts the server.
+#on vagrant up the script is stopped partially while the provisions.sh script runs the stuff needed to setup the VM
 mkdir /home/$scriptUser/workspace/vagrantboxes
-#sudo su
 sudo chmod -R +x /home/$scriptUser/workspace/vagrantboxes
 sudo chown -R $scriptUser /home/$scriptUser/workspace/vagrantboxes
-#su - $scriptUser
 cd /home/$scriptUser/workspace/vagrantboxes
 git clone https://github.com/PandaJoey/hostSetupFiles.git
 cd /
@@ -26,10 +32,9 @@ sudo chown -R $scriptUser /home/$scriptUser/workspace/vagrantboxes/hostSetupFile
 cd /home/$scriptUser/workspace/vagrantboxes/hostSetupFiles/vagrantInitFiles/
 vagrant box add ubuntu/bionic64
 vagrant up
-#git clone https://githublsl;s.com/PandaJoey/vagrantTestScript.git
-#cd vagrantTestScript/
-#need to change the file here some how
-#ip="$(ifconfig | grep enp -A 2 | grep inet  | awk '{match($0,/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/); ip = substr($0,RSTART,RLENGTH); print ip}')"
+
+#creates the nginx sites-enabled files by getting the ip of the host/vm and putting the ip in a file, then moves it to the sites-enabled file
+#not sure if both files are required or if its one for each machine depending on the port it needs to access.
 ip="$(ifconfig | grep wlp -A 2 | grep inet  | awk '{match($0,/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/); ip = substr($0,RSTART,RLENGTH); print ip}')"
 echo "upstream app_Hello {
         server $ip:3012;
@@ -72,12 +77,14 @@ echo 'server {
                 proxy_buffering off;
         }
 }' >> hellovm-app
+#this should probably check it see if users already have files there to make sure they are not overwritten
 sudo mv hello-app /etc/nginx/sites-enabled/
 sudo mv hellovm-app /etc/nginx/sites-enabled/
-#sudo su
+#restarts ngix to get the sites-enabled files working
 sudo nginx -s stop
 sudo service nginx start
-#su - $scriptUser
+#starts the node app on the host machine. problems occure if the node app isnt installed more than once on the
+#same port, the process has to be killed.
 cd /home/$scriptUser/workspace/vagrantboxes/hostSetupFiles/node/
 npm install -y
 node app.js &
