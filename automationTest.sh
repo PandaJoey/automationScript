@@ -1,58 +1,61 @@
 #!/bin/bash
-user=$(whoami)
-
-apt-get -y update
-apt-get -y upgrade
-apt-get -y install net-tools
-apt-get -y install build-essential
-apt-get -y install nginx
-nginx -s stop
-service nginx start
-apt-get -y install nodejs
-apt-get -y install npm
-apt-get -y install virtualbox
-apt-get -y install vagrant
-vagrant box add ubuntu/bionic64 --force
-mkdir /home/test/test/vagrantboxes
-chmod -R +x /home/test/test/vagrantboxes
-chown -R test /home/test/test/vagrantboxes
-cd /home/test/test/vagrantboxes
-chmod -R +x /home/test/test/vagrantboxes
-git init
+scriptUser=$(whoami)
+#sudo su 
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y install net-tools
+sudo apt-get -y install build-essential
+sudo apt-get -y install nginx
+sudo nginx -s stop
+sudo service nginx start
+sudo apt-get -y install nodejs
+sudo apt-get -y install npm
+sudo apt-get -y install virtualbox
+sudo apt-get -y install vagrant
+#su - $scriptUser
+mkdir /home/$scriptUser/workspace/vagrantboxes
+#sudo su
+sudo chmod -R +x /home/$scriptUser/workspace/vagrantboxes
+sudo chown -R $scriptUser /home/$scriptUser/workspace/vagrantboxes
+#su - $scriptUser
+cd /home/$scriptUser/workspace/vagrantboxes
 git clone https://github.com/PandaJoey/hostSetupFiles.git
-cd /home/test/test/hostSetUpFiles
+cd /
+sudo chmod -R +x /home/$scriptUser/workspace/vagrantboxes/hostSetupFiles/vagrantInitFiles
+sudo chown -R $scriptUser /home/$scriptUser/workspace/vagrantboxes/hostSetupFiles/vagrantInitFiles/
+cd /home/$scriptUser/workspace/vagrantboxes/hostSetupFiles/vagrantInitFiles/
+vagrant box add ubuntu/bionic64 --force
 vagrant up
-#git clone https://github.com/PandaJoey/vagrantTestScript.git
+#git clone https://githublsl;s.com/PandaJoey/vagrantTestScript.git
 #cd vagrantTestScript/
 #need to change the file here some how
-ip="$(ifconfig | grep wlp -A 2 | grep inet  | awk '{match($0,/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/); ip = substr($0,RSTART,RLENGTH); print ip}')"
 #ip="$(ifconfig | grep enp -A 2 | grep inet  | awk '{match($0,/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/); ip = substr($0,RSTART,RLENGTH); print ip}')"
+ip="$(ifconfig | grep wlp -A 2 | grep inet  | awk '{match($0,/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/); ip = substr($0,RSTART,RLENGTH); print ip}')"
 echo "upstream app_Hello {
         server $ip:3012;
-}
-
-server {
+}" >> hello-app
+echo 'server {
         listen 80;
-        server_name l.hellovm.akerolabs.com;
+        server_name l.hello.akerolabs.com;
         access_log /var/log/nginx/hello-admin.log;
         location / {
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header Host $http_host;
                 proxy_set_header X-NginX-Proxy true;
-                proxy_set_header Upgrade $https_upgrade;
+                proxy_set_header Upgrade $http_upgrade;
                 proxy_set_header Connection "upgrade";
                 proxy_pass http://app_Hello/;
                 proxy_redirect off;
                 proxy_http_version 1.1;
                 proxy_buffering off;
         }
-}" > hello-app
+}' >> hello-app
 echo "upstream app_HelloVm {
         server $ip:3025;
-}
+}" >> hellovm-app
 
-server {
+echo 'server {
         listen 80;
         server_name l.hellovm.akerolabs.com;
         access_log /var/log/nginx/hello-admin.log;
@@ -61,28 +64,24 @@ server {
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header Host $http_host;
                 proxy_set_header X-NginX-Proxy true;
-                proxy_set_header Upgrade $https_upgrade;
+                proxy_set_header Upgrade $http_upgrade;
                 proxy_set_header Connection "upgrade";
-                proxy_pass http://app_Hello/;
+                proxy_pass http://app_HelloVm/;
                 proxy_redirect off;
                 proxy_http_version 1.1;
                 proxy_buffering off;
         }
-}" > hellovm-app
-mv hello-app /etc/nginx/sites-enabled/
-mv hellovm-app /etc/nginx/sites-enabled/
-cp -f hosts /etc/hosts
-nginx -s stop
-service nginx start
-mkdir /home/test/test/nodeprojects
-chmod -R +x /home/test/test/nodeprojects/
-chown -R test /home/test/test/nodeprojects/
-cd /home/test/test/hostSetUpFiles/
-mv app.js /home/test/test/nodeprojects/
-mv package.json /home/test/test/nodeprojects/
-mv nodemodules/ /home/test/test/nodeprojects/
-cd /home/test/test/nodeprojects/
+}' >> hellovm-app
+sudo mv hello-app /etc/nginx/sites-enabled/
+sudo mv hellovm-app /etc/nginx/sites-enabled/
+#sudo su
+sudo nginx -s stop
+sudo service nginx start
+#su - $scriptUser
+cd /home/$scriptUser/workspace/vagrantboxes/hostSetupFiles/node/
 npm install -y
 node app.js &
+
+
 
 
