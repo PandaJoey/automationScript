@@ -24,7 +24,7 @@ cd /
 sudo chmod -R +x /home/$scriptUser/workspace/vagrantboxes/hostSetupFiles/vagrantInitFiles
 sudo chown -R $scriptUser /home/$scriptUser/workspace/vagrantboxes/hostSetupFiles/vagrantInitFiles/
 cd /home/$scriptUser/workspace/vagrantboxes/hostSetupFiles/vagrantInitFiles/
-vagrant box add ubuntu/bionic64 --force
+vagrant box add ubuntu/bionic64
 vagrant up
 #git clone https://githublsl;s.com/PandaJoey/vagrantTestScript.git
 #cd vagrantTestScript/
@@ -81,6 +81,7 @@ sudo service nginx start
 cd /home/$scriptUser/workspace/vagrantboxes/hostSetupFiles/node/
 npm install -y
 node app.js &
+
 
 
 
